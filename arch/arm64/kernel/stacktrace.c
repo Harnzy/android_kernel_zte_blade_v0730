@@ -75,11 +75,7 @@ int notrace unwind_frame(struct stackframe *frame)
 #ifdef CONFIG_ARM64_IRQ_STACK
 	frame->pc = *(unsigned long *)(fp + 8);
 #else
-	/*
-	 * -4 here because we care about the PC at time of bl,
-	 * not where the return will go.
-	 */
-	frame->pc = *(unsigned long *)(fp + 8) - 4;
+	frame->pc = *(unsigned long *)(fp + 8);
 #endif
 
 #ifdef CONFIG_ARM64_IRQ_STACK
