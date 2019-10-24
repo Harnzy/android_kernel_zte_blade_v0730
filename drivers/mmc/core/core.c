@@ -1199,29 +1199,6 @@ static int __mmc_start_req(struct mmc_host *host, struct mmc_request *mrq)
 	return err;
 }
 
-int mmc_execute_tuning(struct mmc_card *card)
-{
-	struct mmc_host *host = card->host;
-	u32 opcode;
-	int err;
-
-	if (!host->ops->execute_tuning)
-		return 0;
-
-	if (mmc_card_mmc(card))
-		opcode = MMC_SEND_TUNING_BLOCK_HS200;
-	else
-		opcode = MMC_SEND_TUNING_BLOCK;
-
-	mmc_host_clk_hold(host);
-	err = host->ops->execute_tuning(host, opcode);
-	mmc_host_clk_release(host);
-
-	if (err)
-		pr_err("%s: tuning execution failed\n", mmc_hostname(host));
-
-	return err;
-}
 
 /*
  * mmc_wait_for_data_req_done() - wait for request completed

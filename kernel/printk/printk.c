@@ -2356,7 +2356,6 @@ int console_trylock(void)
 	 * softlockup warnings which exacerbate the issue with more
 	 * messages practically incapacitating the system.
 	 */
-	do_cond_resched = console_may_schedule;
 	console_locked = 1;
 	console_may_schedule = 0;
 	return 1;

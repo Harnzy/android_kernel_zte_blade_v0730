@@ -523,7 +523,7 @@ static void smaps_account(struct mem_size_stats *mss, struct page *page,
 
 	if (PageAnon(page))
 		mss->anonymous += size;
-	smss->resident += size;
+	
 	/* Accumulate the size in pages that have been accessed. */
 	if (young || PageReferenced(page))
 		mss->referenced += size;
@@ -567,7 +567,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
 #endif /* CONFIG_SWAP*/
 			mss->swap += PAGE_SIZE;
 #ifdef CONFIG_SWAP
-			entry = pte_to_swp_entry(ptent);
+			entry = pte_to_swp_entry(*pte);
 			if (non_swap_entry(entry))
 				return;
 			p = swap_info_get(entry);

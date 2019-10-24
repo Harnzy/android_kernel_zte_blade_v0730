@@ -200,7 +200,7 @@ static inline bool unconditional(const struct ip6t_entry *e)
 	static const struct ip6t_ip6 uncond;
 
 	return e->target_offset == sizeof(struct ip6t_entry) &&
-		memcmp(&e->ipv6, &uncond, sizeof(uncond)) == 0;
+	       memcmp(&e->ipv6, &uncond, sizeof(uncond)) == 0;
 }
 
 static inline const struct xt_entry_target *
@@ -763,14 +763,6 @@ check_entry_size_and_hooks(struct ip6t_entry *e,
 	if (err)
 		return err;
 
-	if (!ip6_checkentry(&e->ipv6))
-		return -EINVAL;
-
-	err = xt_check_entry_offsets(e, e->elems, e->target_offset,
-				     e->next_offset);
-	if (err)
-		return err;
-
 	/* Check hooks & underflows */
 	for (h = 0; h < NF_INET_NUMHOOKS; h++) {
 		if (!(valid_hooks & (1 << h)))
@@ -779,7 +771,9 @@ check_entry_size_and_hooks(struct ip6t_entry *e,
 			newinfo->hook_entry[h] = hook_entries[h];
 		if ((unsigned char *)e - base == underflows[h]) {
 			if (!check_underflow(e)) {
-				pr_debug("Underflows must be unconditional and use the STANDARD target with ACCEPT/DROP\n");
+				pr_debug("Underflows must be unconditional and "
+					 "use the STANDARD target with "
+					 "ACCEPT/DROP\n");
 				return -EINVAL;
 			}
 			newinfo->underflow[h] = underflows[h];
@@ -1476,17 +1470,14 @@ check_compat_entry_size_and_hooks(struct compat_ip6t_entry *e,
 				  struct xt_table_info *newinfo,
 				  unsigned int *size,
 				  const unsigned char *base,
-				  const unsigned char *limit,
-				  const unsigned int *hook_entries,
-				  const unsigned int *underflows,
-				  const char *name)
+				  const unsigned char *limit)
 {
 	struct xt_entry_match *ematch;
 	struct xt_entry_target *t;
 	struct xt_target *target;
 	unsigned int entry_offset;
 	unsigned int j;
-	int ret, off, h;
+	int ret, off;
 
 	duprintf("check_compat_entry_size_and_hooks %p\n", e);
 	if ((unsigned long)e % __alignof__(struct compat_ip6t_entry) != 0 ||

@@ -360,7 +360,7 @@ static inline bool unconditional(const struct arpt_entry *e)
 	static const struct arpt_arp uncond;
 
 	return e->target_offset == sizeof(struct arpt_entry) &&
-		memcmp(&e->arp, &uncond, sizeof(uncond)) == 0;
+	       memcmp(&e->arp, &uncond, sizeof(uncond)) == 0;
 }
 
 /* Figures out from what hook each rule can be called: returns 0 if
@@ -368,7 +368,7 @@ static inline bool unconditional(const struct arpt_entry *e)
  */
 static int mark_source_chains(const struct xt_table_info *newinfo,
 			      unsigned int valid_hooks, void *entry0,
-			      unsigned int *offsets)unsigned int valid_hooks, void *entry0)
+			      unsigned int *offsets)
 {
 	unsigned int hook;
 
@@ -590,14 +590,6 @@ static inline int check_entry_size_and_hooks(struct arpt_entry *e,
 	if (err)
 		return err;
 
-	if (!arp_checkentry(&e->arp))
-		return -EINVAL;
-
-	err = xt_check_entry_offsets(e, e->elems, e->target_offset,
-				     e->next_offset);
-	if (err)
-		return err;
-
 	/* Check hooks & underflows */
 	for (h = 0; h < NF_ARP_NUMHOOKS; h++) {
 		if (!(valid_hooks & (1 << h)))
@@ -606,7 +598,9 @@ static inline int check_entry_size_and_hooks(struct arpt_entry *e,
 			newinfo->hook_entry[h] = hook_entries[h];
 		if ((unsigned char *)e - base == underflows[h]) {
 			if (!check_underflow(e)) {
-				pr_debug("Underflows must be unconditional and use the STANDARD target with ACCEPT/DROP\n");
+				pr_debug("Underflows must be unconditional and "
+					 "use the STANDARD target with "
+					 "ACCEPT/DROP\n");
 				return -EINVAL;
 			}
 			newinfo->underflow[h] = underflows[h];
@@ -1207,20 +1201,17 @@ static inline void compat_release_entry(struct compat_arpt_entry *e)
 	module_put(t->u.kernel.target->me);
 }
 
-static inline int
+static int
 check_compat_entry_size_and_hooks(struct compat_arpt_entry *e,
 				  struct xt_table_info *newinfo,
 				  unsigned int *size,
 				  const unsigned char *base,
-				  const unsigned char *limit,
-				  const unsigned int *hook_entries,
-				  const unsigned int *underflows,
-				  const char *name)
+				  const unsigned char *limit)
 {
 	struct xt_entry_target *t;
 	struct xt_target *target;
 	unsigned int entry_offset;
-	int ret, off, h;
+	int ret, off;
 
 	duprintf("check_compat_entry_size_and_hooks %p\n", e);
 	if ((unsigned long)e % __alignof__(struct compat_arpt_entry) != 0 ||
