@@ -633,6 +633,10 @@ static const struct option_blacklist_info telit_le922_blacklist_usbcfg3 = {
 	.reserved = BIT(1) | BIT(2) | BIT(3),
 };
 
+static const struct option_blacklist_info cinterion_rmnet2_blacklist = {
+	.reserved = BIT(4) | BIT(5),
+};
+
 static const struct usb_device_id option_ids[] = {
 	{USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT)},
 	{USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA)},

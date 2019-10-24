@@ -2273,14 +2273,6 @@ got_data:
 	} else
 		sdkp->max_xfer_blocks = SD_DEF_XFER_BLOCKS;
 
-	/* Rescale capacity to 512-byte units */
-	if (sector_size == 4096)
-		sdkp->capacity <<= 3;
-	else if (sector_size == 2048)
-		sdkp->capacity <<= 2;
-	else if (sector_size == 1024)
-		sdkp->capacity <<= 1;
-
 	blk_queue_physical_block_size(sdp->request_queue,
 				      sdkp->physical_block_size);
 	sdkp->device->sector_size = sector_size;
@@ -2821,7 +2813,7 @@ static int sd_revalidate_disk(struct gendisk *disk)
 	sdkp->disk->queue->limits.max_sectors =
 		min_not_zero(queue_max_hw_sectors(sdkp->disk->queue), max_xfer);
 
-	set_capacity(disk, sdkp->capacity);
+	set_capacity(disk, logical_to_sectors(sdp, sdkp->capacity));
 	sd_config_write_same(sdkp);
 	kfree(buffer);
 
