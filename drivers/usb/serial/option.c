@@ -282,6 +282,7 @@ static void option_instat_callback(struct urb *urb);
 #define TELIT_PRODUCT_LE922_USBCFG5		0x1045
 #define TELIT_PRODUCT_LE920			0x1200
 #define TELIT_PRODUCT_LE910			0x1201
+#define TELIT_PRODUCT_LE910_USBCFG4		0x1206
 
 /* ZTE PRODUCTS */
 #define ZTE_VENDOR_ID				0x19d2
